@@ -34,7 +34,7 @@ When you press the button, the first 5 items of the list will be pushed to the T
 
 ### Step 2: Install the Tampermonkey script
 - Install the [Tampermonkey](https://www.tampermonkey.net/) browser extension
-- In Tampermonkey, create a new script. Copy & Paste the content from 
+- In Tampermonkey, create a new script. Copy & Paste the content from file [Google Keep TRMNL Button.user.js](https://github.com/ellipticview/trmnl-google-keep/blob/main/Google%20Keep%20TRMNL%20Button.user.js)
 - Edit the script on line 15 to refer to your Webhook URL
 - Choose File > Save
 

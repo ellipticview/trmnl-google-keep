@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Google Keep TRMNL Button
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Adds a custom button to Google Keep edit modal
 // @author       Your Name
 // @match        https://keep.google.com/*
@@ -12,29 +12,55 @@
 
 (function () {
   "use strict";
-  const WEBHOOK_URL = "https://usetrmnl.com/api/custom_plugins/...";
+  const WEBHOOK_URL =
+    "https://usetrmnl.com/api/custom_plugins/5d3e5a26-a32b-40dc-9c58-9a95fef90df7";
+
+  // Function to highlight the selected modal window. Helpful during debugging.
+  function highlightModal(modal) {
+    const originalTransition = modal.style.transition;
+    modal.style.transition = "box-shadow 0.3s ease";
+    modal.style.boxShadow = "0 0 10px 4px rgba(255, 0, 0, 0.8)";
+
+    setTimeout(() => {
+      modal.style.boxShadow = "";
+      modal.style.transition = originalTransition;
+    }, 600);
+  }
 
   // Function to get list items from the DOM
   function getListItems() {
     const modal = document.querySelector(".VIpgJd-TUo6Hb");
-    if (!modal) return [];
+    if (!modal) {
+      console.log("Modal window NOT found");
+      return [];
+    } else {
+      highlightModal(modal);
+      console.log("Modal window found");
+    }
 
-    // Find all list items that have content
+    // Find all list item text elements within the modal
     const items = Array.from(
-      modal.querySelectorAll(
-        ".CmABtb-YPqjbf-sM5MNb .IZ65Hb-YPqjbf.CmABtb-YPqjbf",
-      ),
+      modal.querySelectorAll(".MPu53c .IZ65Hb-vIzZGf-L9AdLc-haAclf p"),
     )
-      .filter((item) => item.textContent.trim()) // Remove empty items
-      .map((item) => item.textContent.trim());
+      .map((item) => item.textContent.trim()) // Extract and trim text content
+      .filter((itemText) => itemText); // Remove empty items
+
+    // Log the extracted items to console
+    console.log("Extracted todo items:", items);
 
     return items;
   }
 
   // Function to send data to webhook
   function sendToWebhook(items) {
-    // The first item in the list is "List item" so we start at array index 1
-    const firstFiveItems = items.slice(1, 6);
+    // console.log(items);
+
+    // The list can have the value "List item" (usually at the start of the list, but also in the middle)
+    // Remove all occurrences of "List item" from the array
+    items = items.filter((item) => item !== "List item");
+    // console.log(items);
+
+    const firstFiveItems = items.slice(0, 5);
     const data = {
       merge_variables: {
         items: firstFiveItems,
@@ -50,6 +76,11 @@
       data: JSON.stringify(data),
       onload: function (response) {
         console.log("Webhook response:", response);
+        // Check if the response status is 429 (Too Many Requests)
+        if (response.status === 429) {
+          console.log("Received 429 response: Too Many Requests");
+          alert("Error from TRML: Too Many Requests. Please try again later.");
+        }
       },
       onerror: function (error) {
         console.error("Webhook error:", error);
