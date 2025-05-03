@@ -14,6 +14,7 @@
   "use strict";
   const WEBHOOK_URL =
     "https://usetrmnl.com/api/custom_plugins/5d3e5a26-a32b-40dc-9c58-9a95fef90df7";
+  const MODAL_SELECTOR = ".VIpgJd-TUo6Hb";
 
   // Function to highlight the selected modal window. Helpful during debugging.
   function highlightModal(modal) {
@@ -29,7 +30,7 @@
 
   // Function to get list items from the DOM
   function getListItems() {
-    const modal = document.querySelector(".VIpgJd-TUo6Hb");
+    const modal = document.querySelector(MODAL_SELECTOR);
     if (!modal) {
       console.log("Modal window NOT found");
       return [];
@@ -120,7 +121,7 @@
 
   // Function to insert the button
   function insertButton() {
-    const modal = document.querySelector(".VIpgJd-TUo6Hb");
+    const modal = document.querySelector(MODAL_SELECTOR);
     if (modal) {
       const pinButton = modal.querySelector(
         'div[class^="Q0hgme-LgbsSe Q0hgme-Bz112c-LgbsSe IZ65Hb-nQ1Faf VIpgJd-LgbsSe"]',
@@ -140,7 +141,7 @@
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.addedNodes.length) {
-        const modal = document.querySelector(".VIpgJd-TUo6Hb");
+        const modal = document.querySelector(MODAL_SELECTOR);
         if (modal) {
           insertButton();
         }
